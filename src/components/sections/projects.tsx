@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import {
   Card,
@@ -25,14 +25,18 @@ const projects = [
     stars: null,
     featured: true,
     status: "In Development",
+    video: null as string | null,
     images: {
       desktop: [
-        { src: "/projects/1.png", alt: "TermCanvas desktop - canvas layout with multiple terminals" },
-        { src: "/projects/3.png", alt: "TermCanvas desktop - multi-terminal workspace with code editors" },
+        { src: "/projects/1.png", alt: "TermCanvas - canvas layout with multiple terminals" },
+        { src: "/projects/2.png", alt: "TermCanvas - context menu with terminal type options" },
+        { src: "/projects/3.png", alt: "TermCanvas - multi-terminal workspace with code editors" },
+        { src: "/projects/4.png", alt: "TermCanvas - remote access settings with QR code" },
       ],
       mobile: [
         { src: "/projects/6.png", alt: "TermCanvas mobile - remote terminal list" },
         { src: "/projects/5.png", alt: "TermCanvas mobile - Claude Code session" },
+        { src: "/projects/7.png", alt: "TermCanvas mobile - OpenCode terminal session" },
       ],
     },
   },
@@ -44,10 +48,15 @@ const projects = [
     github: "https://github.com/voidcraft-dev/memory-forge-rs",
     stars: 32,
     featured: true,
+    video: null as string | null,
     images: {
       desktop: [
-        { src: "/projects/16.png", alt: "Memory Forge RS - dashboard with Claude Code, Codex, OpenCode session stats" },
-        { src: "/projects/12.png", alt: "Memory Forge RS - AI session memory editor with diff view" },
+        { src: "/projects/16.png", alt: "Memory Forge RS - dashboard with session stats" },
+        { src: "/projects/11.png", alt: "Memory Forge RS - prompt library with tags and search" },
+        { src: "/projects/12.png", alt: "Memory Forge RS - session memory editor with diff view" },
+        { src: "/projects/14.png", alt: "Memory Forge RS - OpenCode session editor with chat history" },
+        { src: "/projects/15.png", alt: "Memory Forge RS - settings with themes and language options" },
+        { src: "/projects/17.png", alt: "Memory Forge RS - edit message modal" },
         { src: "/projects/13.png", alt: "Memory Forge RS - about page with features and tech stack" },
       ],
       mobile: [],
@@ -75,8 +84,10 @@ const item = {
 
 function ProjectGallery({
   images,
+  video,
 }: {
   images: { desktop: { src: string; alt: string }[]; mobile: { src: string; alt: string }[] };
+  video?: string | null;
 }) {
   const [activeTab, setActiveTab] = useState<"desktop" | "mobile">("desktop");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -172,6 +183,27 @@ function ProjectGallery({
           ))}
         </div>
       )}
+
+      {video && (
+        <div className="mt-3 overflow-hidden rounded-lg border border-border/50">
+          <video
+            src={video}
+            controls
+            preload="metadata"
+            className="w-full"
+            poster=""
+          >
+            <track kind="captions" />
+          </video>
+        </div>
+      )}
+
+      {!video && (
+        <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-border/50 py-3 text-xs text-muted-foreground/50">
+          <Play className="h-3 w-3" />
+          Demo video coming soon
+        </div>
+      )}
     </div>
   );
 }
@@ -227,7 +259,7 @@ export function Projects() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {project.images && <ProjectGallery images={project.images} />}
+                  {project.images && <ProjectGallery images={project.images} video={project.video} />}
 
                   <div className="mb-4 flex flex-wrap gap-2">
                     {project.tags.map((tag) => (
