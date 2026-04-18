@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Star, Smartphone } from "lucide-react";
+import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import {
   Card,
@@ -81,7 +81,9 @@ function ProjectGallery({
   const [activeTab, setActiveTab] = useState<"desktop" | "mobile">("desktop");
   const [activeIndex, setActiveIndex] = useState(0);
   const currentImages = activeTab === "desktop" ? images.desktop : images.mobile;
-  const current = currentImages[activeIndex];
+
+  const prev = () => setActiveIndex((i) => (i === 0 ? currentImages.length - 1 : i - 1));
+  const next = () => setActiveIndex((i) => (i === currentImages.length - 1 ? 0 : i + 1));
 
   return (
     <div className="mb-4">
@@ -112,17 +114,46 @@ function ProjectGallery({
       )}
 
       <div
-        className={`relative overflow-hidden rounded-lg border border-border/50 bg-background ${
+        className={`group relative overflow-hidden rounded-lg border border-border/50 bg-background ${
           activeTab === "mobile" ? "mx-auto max-w-[200px]" : ""
         }`}
       >
-        <Image
-          src={current.src}
-          alt={current.alt}
-          width={activeTab === "desktop" ? 800 : 375}
-          height={activeTab === "desktop" ? 500 : 667}
-          className="w-full object-cover"
-        />
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+        >
+          {currentImages.map((img, i) => (
+            <div key={img.src} className="w-full flex-shrink-0">
+              <Image
+                src={img.src}
+                alt={img.alt}
+                width={activeTab === "desktop" ? 800 : 375}
+                height={activeTab === "desktop" ? 500 : 667}
+                className="w-full object-cover"
+                priority={i === 0}
+              />
+            </div>
+          ))}
+        </div>
+
+        {currentImages.length > 1 && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 text-muted-foreground opacity-0 backdrop-blur-sm transition-opacity hover:text-foreground group-hover:opacity-100"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 text-muted-foreground opacity-0 backdrop-blur-sm transition-opacity hover:text-foreground group-hover:opacity-100"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
       </div>
 
       {currentImages.length > 1 && (
