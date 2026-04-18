@@ -29,6 +29,22 @@ export const metadata: Metadata = {
     description:
       "Full-stack developer specializing in AI tools, automation, and modern web applications.",
     type: "website",
+    url: "https://voidcraft-site.vercel.app",
+    images: [
+      {
+        url: "https://voidcraft-site.vercel.app/api/og",
+        width: 1200,
+        height: 630,
+        alt: "VoidCraft — Full-Stack Developer & AI Tools",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VoidCraft — Full-Stack Developer & AI Tools",
+    description:
+      "Full-stack developer specializing in AI tools, automation, and modern web applications.",
+    images: ["https://voidcraft-site.vercel.app/api/og"],
   },
 };
 
