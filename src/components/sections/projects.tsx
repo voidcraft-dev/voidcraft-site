@@ -44,6 +44,14 @@ const projects = [
     github: "https://github.com/voidcraft-dev/memory-forge-rs",
     stars: 32,
     featured: true,
+    images: {
+      desktop: [
+        { src: "/projects/16.png", alt: "Memory Forge RS - dashboard with Claude Code, Codex, OpenCode session stats" },
+        { src: "/projects/12.png", alt: "Memory Forge RS - AI session memory editor with diff view" },
+        { src: "/projects/13.png", alt: "Memory Forge RS - about page with features and tech stack" },
+      ],
+      mobile: [],
+    },
   },
   {
     title: "Memory Forge",
@@ -77,29 +85,31 @@ function ProjectGallery({
 
   return (
     <div className="mb-4">
-      <div className="mb-2 flex items-center gap-2">
-        <button
-          onClick={() => { setActiveTab("desktop"); setActiveIndex(0); }}
-          className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
-            activeTab === "desktop"
-              ? "bg-primary/20 text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Desktop
-        </button>
-        <button
-          onClick={() => { setActiveTab("mobile"); setActiveIndex(0); }}
-          className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs transition-colors ${
-            activeTab === "mobile"
-              ? "bg-primary/20 text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Smartphone className="h-3 w-3" />
-          Mobile
-        </button>
-      </div>
+      {images.mobile.length > 0 && (
+        <div className="mb-2 flex items-center gap-2">
+          <button
+            onClick={() => { setActiveTab("desktop"); setActiveIndex(0); }}
+            className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
+              activeTab === "desktop"
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Desktop
+          </button>
+          <button
+            onClick={() => { setActiveTab("mobile"); setActiveIndex(0); }}
+            className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs transition-colors ${
+              activeTab === "mobile"
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Smartphone className="h-3 w-3" />
+            Mobile
+          </button>
+        </div>
+      )}
 
       <div
         className={`relative overflow-hidden rounded-lg border border-border/50 bg-background ${
