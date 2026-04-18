@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import {
   Card,
@@ -198,12 +198,6 @@ function ProjectGallery({
         </div>
       )}
 
-      {!video && (
-        <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-dashed border-border/50 py-3 text-xs text-muted-foreground/50">
-          <Play className="h-3 w-3" />
-          Demo video coming soon
-        </div>
-      )}
     </div>
   );
 }
