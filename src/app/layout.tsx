@@ -13,21 +13,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VoidCraft — Full-Stack Developer & AI Tools",
+  title: "VoidCraft — AI Creation Universe",
   description:
-    "Full-stack developer specializing in AI tools, automation, and modern web applications. Building things from the void.",
+    "Building an interconnected AI creation ecosystem — where music, stories, art, and worlds converge. Open-source tools & products.",
   keywords: [
-    "full-stack developer",
     "AI tools",
-    "automation",
-    "MCP",
+    "full-stack developer",
+    "Tauri",
+    "Rust",
     "Claude Code",
-    "freelance developer",
+    "MCP",
+    "AI music",
+    "world simulator",
+    "indie developer",
   ],
   openGraph: {
-    title: "VoidCraft — Full-Stack Developer & AI Tools",
+    title: "VoidCraft — AI Creation Universe",
     description:
-      "Full-stack developer specializing in AI tools, automation, and modern web applications.",
+      "An interconnected AI creation ecosystem — music, stories, art, and worlds converge.",
     type: "website",
     url: "https://voidcraft-site.vercel.app",
     images: [
@@ -41,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VoidCraft — Full-Stack Developer & AI Tools",
+    title: "VoidCraft — AI Creation Universe",
     description:
-      "Full-stack developer specializing in AI tools, automation, and modern web applications.",
+      "An interconnected AI creation ecosystem — music, stories, art, and worlds converge.",
     images: ["https://voidcraft-site.vercel.app/api/og"],
   },
 };

@@ -5,23 +5,23 @@ import { motion } from "framer-motion";
 const skillGroups = [
   {
     title: "Frontend",
-    skills: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    skills: ["React", "Next.js", "Vue 3", "TypeScript", "Tailwind CSS", "Framer Motion", "Three.js"],
   },
   {
     title: "Backend",
-    skills: ["Rust", "Node.js", "Python", "REST APIs", "GraphQL"],
+    skills: ["Rust", "Node.js", "Python", "FastAPI", "REST APIs", "GraphQL"],
   },
   {
     title: "Desktop & Tools",
-    skills: ["Tauri", "Electron", "Chrome Extensions", "CLI Tools"],
+    skills: ["Tauri", "Electron", "Godot", "Chrome Extensions", "CLI Tools"],
   },
   {
     title: "AI & Automation",
     skills: ["MCP Servers", "Claude API", "LLM Integration", "AI Agents", "Prompt Engineering"],
   },
   {
-    title: "DevOps & Infra",
-    skills: ["Docker", "Vercel", "GitHub Actions", "Linux"],
+    title: "Cloud & Infra",
+    skills: ["Cloudflare Workers", "D1", "R2", "Docker", "Vercel", "GitHub Actions"],
   },
   {
     title: "Data",
@@ -63,13 +63,13 @@ export function Skills() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {skillGroups.map((group) => (
             <motion.div
               key={group.title}
               variants={item}
-              className="rounded-lg border border-border/50 bg-card/30 p-6"
+              className="glass-card group rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
             >
               <h3 className="mb-4 font-mono text-sm font-semibold tracking-wider text-primary uppercase">
                 {group.title}
@@ -78,7 +78,7 @@ export function Skills() {
                 {group.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-md bg-secondary px-3 py-1.5 text-xs text-secondary-foreground"
+                    className="rounded-md bg-secondary/60 px-3 py-1.5 text-xs text-secondary-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     {skill}
                   </span>

@@ -1,7 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Star, Smartphone, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ExternalLink,
+  Star,
+  Smartphone,
+  ChevronLeft,
+  ChevronRight,
+  Music,
+  Palette,
+  BookOpen,
+  Globe,
+} from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import {
   Card,
@@ -12,9 +22,31 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 
-const projects = [
+interface ProjectImage {
+  src: string;
+  alt: string;
+}
+
+interface Project {
+  title: string;
+  description: string;
+  tags: string[];
+  github?: string;
+  live?: string;
+  stars?: number | null;
+  featured?: boolean;
+  status?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  video?: string | null;
+  images?: {
+    desktop: ProjectImage[];
+    mobile: ProjectImage[];
+  };
+}
+
+const featuredProjects: Project[] = [
   {
     title: "TermCanvas",
     description:
@@ -25,47 +57,85 @@ const projects = [
     stars: null,
     featured: true,
     status: "In Development",
-    video: null as string | null,
+    video: null,
     images: {
       desktop: [
-        { src: "/projects/1.png", alt: "TermCanvas - canvas layout with multiple terminals" },
-        { src: "/projects/2.png", alt: "TermCanvas - context menu with terminal type options" },
-        { src: "/projects/3.png", alt: "TermCanvas - multi-terminal workspace with code editors" },
-        { src: "/projects/4.png", alt: "TermCanvas - remote access settings with QR code" },
+        { src: "/projects/1.png", alt: "TermCanvas - canvas layout" },
+        { src: "/projects/2.png", alt: "TermCanvas - context menu" },
+        { src: "/projects/3.png", alt: "TermCanvas - multi-terminal" },
+        { src: "/projects/4.png", alt: "TermCanvas - remote access" },
       ],
       mobile: [
-        { src: "/projects/6.png", alt: "TermCanvas mobile - remote terminal list" },
-        { src: "/projects/5.png", alt: "TermCanvas mobile - Claude Code session" },
-        { src: "/projects/7.png", alt: "TermCanvas mobile - OpenCode terminal session" },
+        { src: "/projects/6.png", alt: "TermCanvas mobile - terminal list" },
+        { src: "/projects/5.png", alt: "TermCanvas mobile - Claude Code" },
+        { src: "/projects/7.png", alt: "TermCanvas mobile - session" },
       ],
     },
   },
   {
     title: "Memory Forge RS",
     description:
-      "Edit AI's memory — local session manager for Claude Code, Codex & OpenCode. 100% offline, built with Tauri + Rust. Visualize and modify AI memory with a clean interface.",
+      "Edit AI's memory — local session manager for Claude Code, Codex, Gemini CLI & Kiro CLI. 100% offline, built with Tauri + Rust. Visualize and modify AI memory with a clean interface.",
     tags: ["Tauri", "Rust", "TypeScript"],
     github: "https://github.com/voidcraft-dev/memory-forge-rs",
-    stars: 32,
+    stars: 66,
     featured: true,
-    video: null as string | null,
+    video: null,
     images: {
       desktop: [
-        { src: "/projects/16.png", alt: "Memory Forge RS - dashboard with session stats" },
-        { src: "/projects/11.png", alt: "Memory Forge RS - prompt library with tags and search" },
-        { src: "/projects/12.png", alt: "Memory Forge RS - session memory editor with diff view" },
-        { src: "/projects/14.png", alt: "Memory Forge RS - OpenCode session editor with chat history" },
-        { src: "/projects/15.png", alt: "Memory Forge RS - settings with themes and language options" },
-        { src: "/projects/17.png", alt: "Memory Forge RS - edit message modal" },
-        { src: "/projects/13.png", alt: "Memory Forge RS - about page with features and tech stack" },
+        { src: "/projects/16.png", alt: "Memory Forge RS - dashboard" },
+        { src: "/projects/11.png", alt: "Memory Forge RS - prompt library" },
+        { src: "/projects/12.png", alt: "Memory Forge RS - diff view" },
+        { src: "/projects/14.png", alt: "Memory Forge RS - chat history" },
+        { src: "/projects/15.png", alt: "Memory Forge RS - settings" },
       ],
       mobile: [],
     },
   },
+];
+
+const ecosystemProjects: Project[] = [
+  {
+    title: "BeatCraft",
+    description:
+      "AI-powered music generation platform. Create ancient-style, epic, and healing music with one click. Live with Gumroad payment.",
+    tags: ["Next.js", "Suno API", "Cloudflare"],
+    live: "https://beatcraft.voidcraft-dev.com",
+    github: "https://github.com/voidcraft-dev/beatcraft",
+    icon: Music,
+    status: "Live",
+  },
+  {
+    title: "HuaYiXia",
+    description:
+      "VoidCraft visual engine — AI character illustration and cover design. Dual engine: GPT Image + HTML rendering.",
+    tags: ["Next.js", "AI Image", "TypeScript"],
+    github: "https://github.com/voidcraft-dev/HuaYiXia",
+    icon: Palette,
+    status: "In Development",
+  },
+  {
+    title: "vk-novel",
+    description:
+      "Interactive novel platform with branching narratives, world-building tools, and AI-assisted writing. Deployed on Cloudflare Workers.",
+    tags: ["Next.js", "D1", "Cloudflare Workers"],
+    github: "https://github.com/voidcraft-dev/vk-novel-app",
+    icon: BookOpen,
+    status: "In Development",
+  },
+  {
+    title: "SeedWorld",
+    description:
+      "AI world simulator — create a world with one sentence. Characters live, talk, and emergent stories unfold autonomously.",
+    tags: ["Three.js", "DeepSeek", "Cloudflare"],
+    github: "https://github.com/voidcraft-dev/SeedWorld",
+    icon: Globe,
+    status: "Concept",
+  },
   {
     title: "Memory Forge",
     description:
-      "The original memory editor for AI coding assistants. Manage and modify Claude Code sessions with a visual interface.",
+      "The original memory editor for AI coding assistants. Manage Claude Code sessions with a visual interface.",
     tags: ["TypeScript", "Node.js"],
     github: "https://github.com/voidcraft-dev/memory-forge",
     stars: 20,
@@ -82,26 +152,60 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
+function SpotlightCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--spotlight-x", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--spotlight-y", `${e.clientY - rect.top}px`);
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      className={`spotlight-card ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 function ProjectGallery({
   images,
   video,
 }: {
-  images: { desktop: { src: string; alt: string }[]; mobile: { src: string; alt: string }[] };
+  images: { desktop: ProjectImage[]; mobile: ProjectImage[] };
   video?: string | null;
 }) {
   const [activeTab, setActiveTab] = useState<"desktop" | "mobile">("desktop");
   const [activeIndex, setActiveIndex] = useState(0);
-  const currentImages = activeTab === "desktop" ? images.desktop : images.mobile;
+  const currentImages =
+    activeTab === "desktop" ? images.desktop : images.mobile;
 
-  const prev = () => setActiveIndex((i) => (i === 0 ? currentImages.length - 1 : i - 1));
-  const next = () => setActiveIndex((i) => (i === currentImages.length - 1 ? 0 : i + 1));
+  const prev = () =>
+    setActiveIndex((i) => (i === 0 ? currentImages.length - 1 : i - 1));
+  const next = () =>
+    setActiveIndex((i) => (i === currentImages.length - 1 ? 0 : i + 1));
 
   return (
     <div className="mb-4">
       {images.mobile.length > 0 && (
         <div className="mb-2 flex items-center gap-2">
           <button
-            onClick={() => { setActiveTab("desktop"); setActiveIndex(0); }}
+            onClick={() => {
+              setActiveTab("desktop");
+              setActiveIndex(0);
+            }}
             className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
               activeTab === "desktop"
                 ? "bg-primary/20 text-primary"
@@ -111,7 +215,10 @@ function ProjectGallery({
             Desktop
           </button>
           <button
-            onClick={() => { setActiveTab("mobile"); setActiveIndex(0); }}
+            onClick={() => {
+              setActiveTab("mobile");
+              setActiveIndex(0);
+            }}
             className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs transition-colors ${
               activeTab === "mobile"
                 ? "bg-primary/20 text-primary"
@@ -126,11 +233,11 @@ function ProjectGallery({
 
       <div
         className={`group relative overflow-hidden rounded-lg border border-border/50 bg-background ${
-          activeTab === "mobile" ? "mx-auto max-w-[200px]" : ""
+          activeTab === "mobile" ? "mx-auto max-w-[200px]" : "aspect-video"
         }`}
       >
         <div
-          className="flex transition-transform duration-300 ease-out"
+          className="flex h-full transition-transform duration-300 ease-out"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {currentImages.map((img, i) => (
@@ -139,8 +246,8 @@ function ProjectGallery({
                 src={img.src}
                 alt={img.alt}
                 width={activeTab === "desktop" ? 800 : 375}
-                height={activeTab === "desktop" ? 500 : 667}
-                className="w-full object-cover"
+                height={activeTab === "desktop" ? 450 : 667}
+                className="h-full w-full object-cover"
                 priority={i === 0}
               />
             </div>
@@ -186,19 +293,33 @@ function ProjectGallery({
 
       {video && (
         <div className="mt-3 overflow-hidden rounded-lg border border-border/50">
-          <video
-            src={video}
-            controls
-            preload="metadata"
-            className="w-full"
-            poster=""
-          >
+          <video src={video} controls preload="metadata" className="w-full">
             <track kind="captions" />
           </video>
         </div>
       )}
-
     </div>
+  );
+}
+
+function StatusBadge({ status }: { status?: string }) {
+  if (!status) return null;
+
+  const colorMap: Record<string, string> = {
+    Live: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+    "In Development": "bg-primary/15 text-primary border-primary/20",
+    Concept: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+  };
+
+  return (
+    <Badge
+      className={`border text-xs font-normal ${colorMap[status] || "bg-primary/15 text-primary border-primary/20"}`}
+    >
+      {status === "Live" && (
+        <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+      )}
+      {status}
+    </Badge>
   );
 }
 
@@ -211,14 +332,115 @@ export function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          className="mb-16 text-center"
         >
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Projects
+            Products & Tools
           </h2>
           <p className="mx-auto max-w-lg text-muted-foreground">
-            Open-source tools and products I&apos;ve built for the developer
-            community.
+            Open-source tools and an AI creation ecosystem — where music,
+            stories, art, and worlds come alive.
+          </p>
+        </motion.div>
+
+        {/* Featured projects with images */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="mb-16 grid gap-6 md:grid-cols-2"
+        >
+          {featuredProjects.map((project) => (
+            <motion.div key={project.title} variants={item}>
+              <SpotlightCard className="h-full">
+                <Card className="group flex h-full flex-col border-border/50 bg-card/50 transition-all duration-300 hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-lg">
+                        {project.title}
+                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        {project.stars && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Star className="h-3 w-3 fill-amber-400/50 text-amber-400" />
+                            {project.stars}
+                          </span>
+                        )}
+                        <StatusBadge status={project.status} />
+                      </div>
+                    </div>
+                    <CardDescription className="text-sm leading-relaxed">
+                      {project.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col">
+                    {project.images && (
+                      <div className="mb-4">
+                        <ProjectGallery
+                          images={project.images}
+                          video={project.video}
+                        />
+                      </div>
+                    )}
+
+                    <div className="mt-auto">
+                      <div className="mb-4 flex flex-wrap gap-2">
+                        {project.tags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs font-normal"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
+                          >
+                            <GithubIcon className="h-3.5 w-3.5" />
+                            Source
+                          </a>
+                        )}
+                        {project.live && (
+                          <a
+                            href={project.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Live
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </SpotlightCard>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Ecosystem & other projects */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <h3 className="mb-2 text-center font-mono text-sm tracking-widest text-primary uppercase">
+            VoidCraft Ecosystem
+          </h3>
+          <p className="mb-8 text-center text-sm text-muted-foreground">
+            An interconnected AI creation universe
           </p>
         </motion.div>
 
@@ -227,49 +449,43 @@ export function Projects() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {projects.map((project) => (
-            <motion.div
-              key={project.title}
-              variants={item}
-              className={project.featured && project.images ? "md:col-span-2 lg:col-span-2" : ""}
-            >
-              <Card className="group h-full border-border/50 bg-card/50 transition-colors hover:border-primary/30">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{project.title}</CardTitle>
+          {ecosystemProjects.map((project) => (
+            <motion.div key={project.title} variants={item}>
+              <SpotlightCard className="h-full">
+                <div className="glass-card group h-full rounded-xl p-5 transition-all duration-300 hover:-translate-y-1">
+                  <div className="mb-3 flex items-start justify-between">
+                    <div className="flex items-center gap-2.5">
+                      {project.icon && (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+                          <project.icon className="h-4 w-4" />
+                        </div>
+                      )}
+                      <h4 className="font-semibold">{project.title}</h4>
+                    </div>
                     <div className="flex items-center gap-2">
                       {project.stars && (
                         <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Star className="h-3 w-3" />
+                          <Star className="h-3 w-3 fill-amber-400/50 text-amber-400" />
                           {project.stars}
                         </span>
                       )}
+                      <StatusBadge status={project.status} />
                     </div>
                   </div>
-                  <CardDescription className="text-sm leading-relaxed">
+                  <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                     {project.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {project.images && <ProjectGallery images={project.images} video={project.video} />}
-
-                  <div className="mb-4 flex flex-wrap gap-2">
+                  </p>
+                  <div className="mb-3 flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
-                      <Badge
+                      <span
                         key={tag}
-                        variant="secondary"
-                        className="text-xs font-normal"
+                        className="rounded-md bg-secondary/50 px-2 py-0.5 text-xs text-muted-foreground"
                       >
                         {tag}
-                      </Badge>
+                      </span>
                     ))}
-                    {project.status && (
-                      <Badge className="bg-primary/20 text-primary text-xs font-normal">
-                        {project.status}
-                      </Badge>
-                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     {project.github && (
@@ -277,7 +493,7 @@ export function Projects() {
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary active:text-primary/80"
+                        className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
                       >
                         <GithubIcon className="h-3.5 w-3.5" />
                         Source
@@ -288,15 +504,15 @@ export function Projects() {
                         href={project.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary active:text-primary/80"
+                        className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                         Live
                       </a>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </SpotlightCard>
             </motion.div>
           ))}
         </motion.div>
