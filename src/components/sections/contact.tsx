@@ -4,29 +4,23 @@ import { motion } from "framer-motion";
 import { Mail, FileText } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
+import type { LandingCtaData } from "@/lib/cms";
 
-const contactLinks = [
-  {
-    icon: Mail,
-    label: "Email",
-    href: "mailto:revk3315196130@gmail.com",
-    text: "revk3315196130@gmail.com",
-  },
-  {
-    icon: GithubIcon,
-    label: "GitHub",
-    href: "https://github.com/voidcraft-dev",
-    text: "github.com/voidcraft-dev",
-  },
-  {
-    icon: FileText,
-    label: "Blog",
-    href: "https://voidcraft-blog.vercel.app",
-    text: "VoidCraft Blog",
-  },
-];
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  "mailto:": Mail,
+  "github.com": GithubIcon,
+};
 
-export function Contact() {
+function getIcon(href: string) {
+  for (const [key, Icon] of Object.entries(ICON_MAP)) {
+    if (href.includes(key)) return Icon;
+  }
+  return FileText;
+}
+
+export function Contact({ data }: { data: LandingCtaData }) {
+  const primaryCta = data.ctas[0];
+
   return (
     <section id="contact" className="px-6 py-24">
       <div className="mx-auto max-w-2xl text-center">
@@ -37,52 +31,66 @@ export function Contact() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Let&apos;s Work Together
+            {data.headline}
           </h2>
-          <p className="mb-8 text-muted-foreground">
-            Available for freelance projects, consulting, and collaboration.
-            Let&apos;s build something great.
-          </p>
+          {data.subheadline && (
+            <p className="mb-8 text-muted-foreground">{data.subheadline}</p>
+          )}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8 flex flex-col items-center gap-4"
-        >
-          {contactLinks.map((link) => (
+        {data.ctas.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-8 flex flex-col items-center gap-4"
+          >
+            {data.ctas.slice(1).map((cta) => {
+              const Icon = getIcon(cta.href);
+              return (
+                <a
+                  key={cta.href}
+                  href={cta.href}
+                  target={cta.href.startsWith("mailto") ? undefined : "_blank"}
+                  rel={
+                    cta.href.startsWith("mailto")
+                      ? undefined
+                      : "noopener noreferrer"
+                  }
+                  className="group flex items-center gap-3 text-muted-foreground transition-colors hover:text-primary active:text-primary/80"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm">{cta.label}</span>
+                </a>
+              );
+            })}
+          </motion.div>
+        )}
+
+        {primaryCta && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <a
-              key={link.label}
-              href={link.href}
-              target={link.href.startsWith("mailto") ? undefined : "_blank"}
+              href={primaryCta.href}
+              target={
+                primaryCta.href.startsWith("mailto") ? undefined : "_blank"
+              }
               rel={
-                link.href.startsWith("mailto")
+                primaryCta.href.startsWith("mailto")
                   ? undefined
                   : "noopener noreferrer"
               }
-              className="group flex items-center gap-3 text-muted-foreground transition-colors hover:text-primary active:text-primary/80"
+              className={buttonVariants({ size: "lg" })}
             >
-              <link.icon className="h-4 w-4" />
-              <span className="text-sm">{link.text}</span>
+              {primaryCta.label}
             </a>
-          ))}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <a
-            href="mailto:revk3315196130@gmail.com"
-            className={buttonVariants({ size: "lg" })}
-          >
-            Get In Touch
-          </a>
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
